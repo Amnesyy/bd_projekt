@@ -1,0 +1,70 @@
+<!-- elements.html -->
+{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dropdown List</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#item_dropdown").change(function() {
+                var selectedItems = $(this).val();
+
+                // Check if any item is selected
+                if (selectedItems) {
+                    $.ajax({
+                        url: "{% url 'addInfo' %}",
+                        method: 'POST',
+                        data: {
+                            'selected_items': selectedItems,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function(data) {
+                             //Update the additional info section
+                            $('#additional_info').html('');
+                            if (data.additional_info && data.additional_info.length) {
+                                for (var i = 0; i < data.additional_info.length; i++) {
+                                    var related_data = data.additional_info[i].related_data;
+                                    $('#additional_info').append('<h2>' + data.additional_info[i].item + ' występuje w: </h2>');
+                                    $('#additional_info').append('<ul>');
+                                    for (var j = 0; j < related_data.length; j++) {
+                                        $('#additional_info').append('<li>' + data.additional_info[i].related_data[j] + '</li>');
+                                    }
+                                    $('#additional_info').append('</ul>');
+                                }
+                            } else {
+                                $('#additional_info').append('<p>No related tables found.</p>');
+                            }
+                        },
+                        error: function() {
+                            alert('Error fetching additional info.');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Wybierz pierwiastek:</h1>
+
+    <form method="post" action="{% url 'getDB' %}">
+        {% csrf_token %}
+        <label for="item_dropdown">Pierwiastki: </label>
+        <select id="item_dropdown" name="selected_items" multiple style="width: 300px;">
+            {% for item in items %}
+                <option value="{{ item }}">{{ item }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <div id="additional_info">
+        <!-- Display additional info here -->
+    </div>
+
+</body>
+{% endblock %}
+</html>

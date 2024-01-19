@@ -1,0 +1,206 @@
+<!-- base.html -->
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Your Title{% endblock %}</title>
+
+    <!-- Add a link to an icon library, for example, Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Your custom CSS styles -->
+    <style>
+        /* Add your custom styles here */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            transition: margin-left 0.5s;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center; /* Center align header text */
+            position: relative;
+        }
+
+        .burger-icon {
+            display: block;
+            cursor: pointer;
+            font-size: 24px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+
+        .side-panel {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+        }
+
+        .side-panel a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .side-panel a:hover {
+            color: #f1f1f1;
+        }
+
+        .content {
+            margin-left: 0;
+            transition: margin-left 0.5s;
+        }
+
+        @media (max-width: 768px) {
+            .burger-icon {
+                display: block;
+            }
+
+            .side-panel {
+                padding-top: 15px;
+            }
+
+            .content {
+                margin-left: 0;
+            }
+        }
+
+        <style>
+            .welcome-message {
+                color: green;
+            }
+    
+            .logout-link {
+                color: red;
+            }
+    
+            .not-logged-in {
+                color: white;
+            }
+    
+            .login-link {
+                color: orange;
+            }
+    
+            .register-link {
+                color: orange;
+            }
+            .compounds-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+        
+            .compounds-table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: center;
+            }
+        
+            .compounds-table th {
+                background-color: #333;
+                color: grey;
+            }
+        
+            .compounds-table tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+        @media (max-width: 768px) and (min-width: 1px) {
+            .content.shifted {
+                margin-left: 250px;
+            }
+
+            .side-panel.shifted {
+                width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <!-- Burger menu icon -->
+        <div class="burger-icon" onclick="toggleSidePanel()">
+            <i class="fas fa-bars"></i>
+        </div>
+
+        <!-- Your header content goes here -->
+        <h1>Baza danych ze związkami chemicznymi natury wszelakiej</h1>
+        <!-- Add navigation links or any other content -->
+        {% if request.user.is_authenticated %}
+        
+            <p class="welcome-message">
+                Zalogowano jako: {{ request.user.username }} 
+                {% with rank_image_name=request.user.get_rank_image_name %}
+                    {% if rank_image_name and request.user.rank != '-' %}
+                        <img src="{% static 'rank_images/' %}{{ rank_image_name }}" alt="{{ request.user.rank }}">
+                    {% endif %}
+                {% endwith %}
+                <a href="{% url 'logout' %}" class="logout-link">Logout</a></p>
+        {% else %}
+            <p class="not-logged-in"><a href="{% url 'login' %}" class="login-link">Zaloguj się</a> lub <a href="{% url 'register' %}" class="register-link">Zarejestruj się</a></p>
+        {% endif %}
+    </header>
+
+    <!-- Side panel -->
+    <div class="side-panel" id="sidePanel">
+        <a href="#" onclick="closeSidePanel()">&times;</a>
+        <!-- Add your subsite links here -->
+        {% if request.user.is_authenticated %}
+            {% if request.user.is_superuser %}
+                <a href="{% url 'view_all_users' %}" class="view-all-users-link">View All Users</a>
+            {% endif %}
+            <a href="{% url 'logout' %}" class="logout-link">Logout</a>
+            <a href="{% url 'adder' %}">Dodaj do bazy</a>
+        {% else %}
+            <a href="{% url 'register' %}" class="register-link">Zarejestruj się</a>
+            <a href="{% url 'login' %}" class="login-link">Zaloguj się</a>
+        {% endif %}
+        <a href="{% url 'getDB' %}">Pierwiastki</a>
+        <a href="{% url 'compunds_list' %}">Lista związków</a>
+    </div>
+
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Your custom JavaScript -->
+    <script>
+        function toggleSidePanel() {
+            var sidePanel = document.getElementById("sidePanel");
+            var content = document.querySelector(".content");
+            
+            if (sidePanel.style.width === "250px") {
+                sidePanel.style.width = "0";
+                content.classList.remove("shifted");
+                sidePanel.classList.remove("shifted");
+            } else {
+                sidePanel.style.width = "250px";
+                content.classList.add("shifted");
+                sidePanel.classList.add("shifted");
+            }
+        }
+
+        function closeSidePanel() {
+            document.getElementById("sidePanel").style.width = "0";
+            document.querySelector(".content").classList.remove("shifted");
+            document.getElementById("sidePanel").classList.remove("shifted");
+        }
+    </script>
+</body>
+</html>

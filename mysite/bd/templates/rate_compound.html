@@ -1,0 +1,38 @@
+<!-- rate_compound.html -->
+{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oceń - {{ compound_details.compound_name }}</title>
+</head>
+<body>
+    <h1> Oceń - {{ compound_details.compound_name }}</h1>
+
+    <form method="post" action="{% url 'submit_rating' compound_id=compound_details.compound_id %}">
+        {% csrf_token %}
+        <div class="rating-container"
+                <input type="radio" id="rating{{ 1 }}" name="user_rating" value="{{ 1 }}">
+                <label for="rating{{ 1 }}" class="fa fa-star" data-rating-value="{{ 1 }}"></label>
+                <input type="radio" id="rating{{ 2 }}" name="user_rating" value="{{ 2 }}">
+                <label for="rating{{ 2 }}" class="fa fa-star" data-rating-value="{{ 2 }}"></label>
+                <input type="radio" id="rating{{ 3 }}" name="user_rating" value="{{ 3 }}">
+                <label for="rating{{ 3 }}" class="fa fa-star" data-rating-value="{{ 3 }}"></label>
+                <input type="radio" id="rating{{ 4 }}" name="user_rating" value="{{ 4 }}">
+                <label for="rating{{ 4 }}" class="fa fa-star" data-rating-value="{{ 4 }}"></label>
+                <input type="radio" id="rating{{ 5 }}" name="user_rating" value="{{ 5 }}">
+                <label for="rating{{ 5 }}" class="fa fa-star" data-rating-value="{{ 5 }}"></label>
+                <input type="radio" id="rating{{ 6 }}" name="user_rating" value="{{ 6 }}">
+                <label for="rating{{ 6 }}" class="fa fa-star" data-rating-value="{{ 6 }}"></label>
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+
+    <!-- Add more details as needed -->
+
+    <a href="{% url 'compunds_list' %}">Powrót do listy związków</a>
+</body>
+{% endblock %}
+</html>

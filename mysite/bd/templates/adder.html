@@ -1,0 +1,48 @@
+<!-- add_element.html -->
+
+{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+    
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Element</title>
+</head>
+<body>
+    <h1>Add Element to Database</h1>
+
+    <form method="post" action="{% url 'adder' %}">
+        {% csrf_token %}
+
+        <!-- Field: Name -->
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <br>
+
+        <!-- Field: Formula -->
+        <label for="formula">Formula:</label>
+        <input type="text" id="formula" name="formula" required>
+        <br>
+
+        <label for="list-dropdown">Kategoria:</label>
+        <select id="category" name="category" required>
+            <option value="Używki">Używki</option>
+            <option value="Leki">Leki</option>
+            <option value="Chemia_domowa">Chemia domowa</option>
+            <option value="Środki_do_ćwiczeń">Środki do ćwiczeń</option>
+            <option value="Ogólne">Ogólne</option>
+            <!-- Add more options as needed -->
+        </select>
+        <!-- Submit Button -->
+        <button type="submit">Add Element</button>
+    </form>
+
+    {% if message %}
+        <div class="message">{{ message }}</div>
+    {% endif %}
+</body>
+
+{% endblock %}
+</html>

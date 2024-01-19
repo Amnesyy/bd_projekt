@@ -1,0 +1,49 @@
+<!-- all_users.html -->
+{% extends 'base.html' %}
+<!DOCTYPE html>
+{% block content %}
+{% load static %}
+<head>
+    <!-- Add necessary meta tags and title -->
+</head>
+<body>
+    <h1>All Users</h1>
+    <p>Below is a list of all registered users:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Rank</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in all_users %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>
+                        {% if user.rank and user.rank != '-' %}
+                            {% with rank_image_name=user.get_rank_image_name %}
+                                <img src="{% static 'rank_images/' %}{{ rank_image_name }}" alt="{{ user.rank }} style="width: 1px; height: 1px;"">
+                            {% endwith %}
+                        {% endif %}
+                    </td>s
+                    <td>
+                        <form method="post" action="{% url 'add_rank' %}">
+                            {% csrf_token %}
+                            <select name="rank">
+                                {% for choice in rank_choices %}
+                                <option value="{{ choice.0 }}" {% if user.rank == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+                                {% endfor %}
+                            </select>
+                            <input type="hidden" name="user" value="{{ user.id }}">
+                            <button type="submit">Add Rank</button>
+                        </form>
+                    </td>
+                    <td><!-- Add other actions if needed --></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+{% endblock %}
+</html>

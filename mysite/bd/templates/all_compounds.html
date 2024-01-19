@@ -1,0 +1,146 @@
+<!-- compounds_list.html -->
+
+{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+{% block content %}
+<head>
+    <style>
+        .rating-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .rating-container .fa {
+            cursor: pointer;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compounds List</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const categoryButtons = document.querySelectorAll('.category-button');
+            const compoundsRows = document.querySelectorAll('.compounds-row');
+
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const category = this.dataset.category;
+
+                    // Handle "All" button separately
+                    if (category === 'all') {
+                        // Show all rows
+                        compoundsRows.forEach(row => {
+                            row.style.display = '';
+                        });
+                    } else {
+                        // Hide all rows
+                        compoundsRows.forEach(row => {
+                            row.style.display = 'none';
+                        });
+
+                        // Show rows with selected category
+                        const categoryRows = document.querySelectorAll(`.category-${category}`);
+                        categoryRows.forEach(row => {
+                            row.style.display = '';
+                        });
+                    }
+                });
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const ratingContainers = document.querySelectorAll('.compounds-row');
+        
+            ratingContainers.forEach(container => {
+                const compoundId = container.dataset.compoundId;
+                const userRatingContainer = container.querySelector('.user-rating');
+        
+                // Display stars for user rating
+                for (let i = 1; i <= 5; i++) {
+                    const star = document.createElement('span');
+                    star.className = 'fa fa-star';
+                    star.dataset.ratingValue = i;
+        
+                    star.addEventListener('mouseover', function () {
+                        highlightStars(container, i);
+                    });
+        
+                    star.addEventListener('mouseout', function () {
+                        resetStars(container);
+                    });
+        
+                    star.addEventListener('click', function () {
+                        // Send the user rating to the server (you need to implement this)
+                        const ratingValue = parseInt(this.dataset.ratingValue);
+                        // Implement a function to send the ratingValue and compoundId to the server
+                        // e.g., sendUserRating(compoundId, ratingValue);
+                    });
+        
+                    userRatingContainer.appendChild(star);
+                }
+            });
+        
+            function highlightStars(container, count) {
+                const stars = container.querySelectorAll('.fa-star');
+                stars.forEach((star, index) => {
+                    star.classList.toggle('checked', index < count);
+                });
+            }
+        
+            function resetStars(container) {
+                const stars = container.querySelectorAll('.fa-star');
+                stars.forEach(star => {
+                    star.classList.remove('checked');
+                });
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>Lista związków</h1>
+
+    <!-- Category buttons -->
+    <div>
+        <button class="category-button" data-category="all">All</button>
+        <button class="category-button" data-category="Ogólne">Ogólne</button>
+        <button class="category-button" data-category="Leki">Leki</button>
+        <button class="category-button" data-category="Chemia_domowa">Chemia domowa</button>
+        <button class="category-button" data-category="Środki_do_ćwiczeń">Środki do ćwiczeń</button>
+        <button class="category-button" data-category="Używki">Używki</button>
+    </div>
+
+    
+
+    <table class="compounds-table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nazwa</th>
+                <th>Wzór</th>
+                <th>Kategoria</th>
+                <th>Średnia Ocena  &lpar; Ilość ocen &rpar;</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if compounds %}
+                {% for compound_id, compound_name, compound_formula, compound_category, average_rating, count in compounds %}
+                    <tr class="compounds-row category-{{ compound_category }}">
+                        <td>{{ compound_id }}</td>
+                        <td>{{ compound_name}}</td>
+                        <td>{{ compound_formula }}</td>
+                        <td>{{ compound_category }}</td>
+                        <td class="average-rating">{{ average_rating|default:"" }} &lpar; {{count}} &rpar; </td>
+                        <td><a href="{% url 'rate_compound' compound_id=compound_id %}">Oceń!</a></td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="4">No compounds available.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</body>
+{% endblock %}
+</html>
